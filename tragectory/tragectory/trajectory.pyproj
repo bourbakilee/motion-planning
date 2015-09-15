@@ -4,13 +4,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ceb3e053-940b-405b-ad3c-39130c1a1106</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>tragectory.py</StartupFile>
+    <ProjectHome>
+    </ProjectHome>
+    <StartupFile>trajectory.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>tragectory</Name>
+    <Name>trajectory</Name>
     <RootNamespace>tragectory</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -31,7 +32,7 @@
     <Compile Include="spiral5.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="tragectory.py" />
+    <Compile Include="trajectory.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="road4.png" />
