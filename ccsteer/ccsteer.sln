@@ -5,6 +5,21 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccsteer", "ccsteer\ccsteer.vcxproj", "{4AC0FE78-190E-431B-8FB4-EDB7793126F2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "interpolate", "interpolate\interpolate.vcxproj", "{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4AC0FE78-190E-431B-8FB4-EDB7793126F2} = {4AC0FE78-190E-431B-8FB4-EDB7793126F2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "steering", "steering\steering.vcxproj", "{C1296761-1F09-4ACD-9B01-E0042602565B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4AC0FE78-190E-431B-8FB4-EDB7793126F2} = {4AC0FE78-190E-431B-8FB4-EDB7793126F2}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F2C4B08-CF68-4A7F-A881-C09B8811AD87}"
+	ProjectSection(SolutionItems) = preProject
+		readme.docx = readme.docx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +36,22 @@ Global
 		{4AC0FE78-190E-431B-8FB4-EDB7793126F2}.Release|x64.Build.0 = Release|x64
 		{4AC0FE78-190E-431B-8FB4-EDB7793126F2}.Release|x86.ActiveCfg = Release|Win32
 		{4AC0FE78-190E-431B-8FB4-EDB7793126F2}.Release|x86.Build.0 = Release|Win32
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Debug|x64.ActiveCfg = Debug|x64
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Debug|x64.Build.0 = Debug|x64
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Debug|x86.ActiveCfg = Debug|Win32
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Debug|x86.Build.0 = Debug|Win32
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Release|x64.ActiveCfg = Release|x64
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Release|x64.Build.0 = Release|x64
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Release|x86.ActiveCfg = Release|Win32
+		{E29EC9E5-F8DF-48F2-8C30-EEA8642E8B67}.Release|x86.Build.0 = Release|Win32
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Debug|x64.ActiveCfg = Debug|x64
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Debug|x64.Build.0 = Debug|x64
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Debug|x86.ActiveCfg = Debug|Win32
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Debug|x86.Build.0 = Debug|Win32
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Release|x64.ActiveCfg = Release|x64
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Release|x64.Build.0 = Release|x64
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Release|x86.ActiveCfg = Release|Win32
+		{C1296761-1F09-4ACD-9B01-E0042602565B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

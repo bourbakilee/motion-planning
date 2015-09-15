@@ -179,7 +179,7 @@ public:
 	static double distance(const State &q1, const State &q2,const CCStateSpace& space);
 	static double distance(State *q1, State *q2,const CCStateSpace& space);
 	double distance(State *q1, State *q2);
-	bool interpolate(double *err, vector<State> *vec, State *q_s, State *q_g, int type, double *parameters, double step);
+	void interpolate(double *err, vector<State> *vec, State *q_s, State *q_g, int type, double *parameters, double step);
 	// member datas
 	const double k_max;
 	const double sigma_max;

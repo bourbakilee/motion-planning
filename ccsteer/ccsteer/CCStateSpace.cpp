@@ -2301,7 +2301,7 @@ CCStateSpace::CCPath::CCPath(CCStateSpace::State *start, CCStateSpace::State *go
     }
 }
 
-bool CCStateSpace::interpolate(double *err, vector<CCStateSpace::State> *vec, CCStateSpace::State *q_s, CCStateSpace::State *q_g, int type, double *parameters, double step)
+void CCStateSpace::interpolate(double *err, vector<CCStateSpace::State> *vec, CCStateSpace::State *q_s, CCStateSpace::State *q_g, int type, double *parameters, double step)
 {
 
     const int *tp=CCStateSpace::PathType[type];
