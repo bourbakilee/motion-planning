@@ -7,15 +7,17 @@ import matplotlib.pyplot as plt
 
 class Grid():
     # M - column, N - row must be even
-    def __init__(self,dM,M,dN,N,mat):
-        self.M = M
-        self.N = N
+    def __init__(self,dM,dN,data):
+        self.M = data.shape[1]
+        self.N = data.shape[0]
         self.dM = dM
         self.dN = dN
-        self.mat = mat
+        self.data = data
+
     @property
     def width(self):
         return M*dM
+
     @property
     def height(self):
         return N*dN
@@ -23,9 +25,10 @@ class Grid():
 
 class Circle():
     def __init__(self, r):
-        #self.x = x
-        #self.y = y
+        #self.x = 0
+        #self.y = 0
         self.r = r
+
     def mesh(self, grid_map):
         # return NXM array
         R = np.zeros((grid_map.N, grid_map.M)) 
@@ -35,10 +38,10 @@ class Circle():
             x = np.sqrt(self.r**2 - y**2)
             i = np.floor(-x/grid_map.dM + 0.5)
             i_list = np.linspace(i, -i, -2*i+1)
-            i_list = np.where(i_list<0, i_list+grid_map.M, i_list)
-            jj=j+grid_map.N
+            #i_list = np.where(i_list<0, i_list+grid_map.M, i_list)
+            #jj=j+grid_map.N
             for ii in i_list:
-                R[ii,jj] = 1
+                R[ii,j] = 1
             j += 1
             y += grid_map.dN
         j = 0
@@ -47,64 +50,81 @@ class Circle():
             x = np.sqrt(self.r**2 - y**2)
             i = np.floor(-x/grid_map.dM + 0.5)
             i_list = np.linspace(i, -i, -2*i+1)
-            i_list = np.where(i_list<0, i_list+grid_map.N, i_list)
+            #i_list = np.where(i_list<0, i_list+grid_map.N, i_list)
             for ii in i_list:
                 R[ii,j] = 1
             j += 1
             y += grid_map.dN
         return R
 
+    def moveto(self,disk_mesh,x,y):
+        # disk_mesh - NXM array
+        # x,y > 0
+        R = np.zeros(disk_mesh.shape)
+        for i in range(R.shape[0]):
+            for j in range(R.shape[1]):
+                R[i,j] = disk_mesh[i-x, j-y] 
+        return R
+
+
 class Veh_Cfg():
+    # (x,y)-center of rear axis
     def __init__(self, x,y,t,l1,l2,w):
         self.x = x
         self.y = y
         self.t = t
         self.l1 = l1
         self.l2 = l2
-        self.w = w
+        self.length = l1+l2
+        self.width = w
+        self.r = np.sqrt(self.length**2/9 + self.width**2/4) # radius of circles, which cover the vehicle
+        self.d = 2*self.length/3
+
+    def centers_of_circles(self):
+        c = np.zeros((3,2))
+        direction = np.array([np.sin(self.t),np.cos(self.t)])
+        c[1] = np.array([self.x,self.y]) + (self.l1 - self.l2)/2 * direction
+        c[0] = c[1] - self.d * direction
+        c[2] = c[1] + self.d * direction
+        return np.floor(c)
+
+    def cost(self, centers, costmap):
+        return np.max([costmap[tuple(c)] for c in centers])
 
 
-'''
-disk = Circle(10)
-grdmap = Grid(0.1,500,0.1,500,np.zeros((500,500)))
-data = disk.mesh(grdmap)
-plt.imshow(data, cmap=plt.cm.gray_r)
-plt.show()
-'''
 
 N=400 # map size
-delta =0.25 # incremental size
-eps = 0.1 # err
+delta =0.25 # incremental distance
+eps = 0.1 # numerical err
 
-o = np.zeros((N,N)) # obstacles
-o[0, :] = 1
-o[N-1, :] = 1
-o[:, 0] = 1
-o[:, N-1] = 1
-o[170:230, 170:230] = 1
-obstacles = Grid(delta,N,delta,N,o)
+obstacles = np.zeros((N,N)) # obstacles
+obstacles[0, :] = 1
+obstacles[N-1, :] = 1
+obstacles[:, 0] = 1
+obstacles[:, N-1] = 1
+obstacles[170:230, 170:230] = 1
+workspace = Grid(delta,delta,obstacles)
 
-disk = Circle(10)
-robot = disk.mesh(obstacles)
+veh = Veh_Cfg(25,25,np.pi/4,4,1,2)
+disk = Circle(veh.r)
+disk_mesh = disk.mesh(workspace)
+centers = veh.centers_of_circles()
+veh_mesh = np.zeros((N,N))
+veh_mesh += disk.moveto(disk_mesh,centers[0,0],centers[0,1])
+veh_mesh += disk.moveto(disk_mesh,centers[1,0],centers[1,1])
+veh_mesh += disk.moveto(disk_mesh,centers[2,0],centers[2,1])
+veh_mesh = np.where(veh_mesh>0, 0.8, 0)
 
-Obst = fft2(obstacles.mat)
-Robot = fft2(robot)
-Collision = Obst * Robot
-collision = np.real(ifft2(Collision))
-collision = np.where(collision > eps, 0.5, 0) + obstacles.mat
-collision = np.where(collision > 1, 1, collision)
-plt.imshow(collision, cmap=plt.cm.gray_r)
+Obstacles = fft2(obstacles)
+Robot = fft2(disk_mesh)
+CostMap = Obstacles * Robot
+costmap = np.real(ifft2(CostMap))
+costmap = np.where(costmap > eps, 0.5, 0) + obstacles + veh_mesh
+costmap = np.where(costmap > 1, 1, costmap)
+
+cost = veh.cost(centers,costmap)
+
+print(cost)
+
+plt.imshow(costmap, cmap=plt.cm.gray_r)
 plt.show()
-# r = np.zeros((N, N)) # robot
-# r[0:5, 0:5] = 1
-# r[N-4:N, 0:5]= 1
-# r[0:5, N-4:N] = 1
-# r[N-4:N, N-4:N] = 1
-# O = fft2(o)
-# R = fft2(r)
-# C = O*R # convolution
-# c = np.real(ifft2(C))
-# c = np.where(c > eps, 1, 0)
-# plt.imshow(c, cmap=plt.cm.gray_r)
-# plt.colorbar()
-# plt.show()
