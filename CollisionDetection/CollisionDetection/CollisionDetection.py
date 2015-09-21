@@ -4,7 +4,32 @@ import numpy as np
 from scipy.fftpack import fft2, ifft2
 import matplotlib.pyplot as plt
 
+import costmap
 
+def road_profile(s):
+    #s<=220
+    return 0.01-0.00038611167606780294*s+4.4656981495145228e-6*s**2-1.4071316854528154e-8*s**3
+
+length=220.
+lane_num = 5
+q0=(1.,15.,np.pi/10)
+road = costmap.Road(length,lane_num=lane_num,center_line_fun=road_profile,q=q0)
+# print(road.center_line)
+plt.plot(road.center_line[:,0],road.center_line[:,1])
+for i in range(road.lane_num+1):
+    plt.plot(road.boundary_lines[:,2*i],road.boundary_lines[:,2*i+1])
+plt.axis('equal')
+plt.show()
+
+
+
+
+
+
+
+
+
+'''
 class Grid():
     # M - column, N - row must be even
     def __init__(self,dM,dN,data):
@@ -130,3 +155,4 @@ plt.imshow(costmap, cmap=plt.cm.gray_r, origin="lower", extent=(0,100,0,100))
 
 # plt.rc('figure', figsize=(1000,1000))
 plt.show()
+'''

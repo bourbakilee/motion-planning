@@ -29,6 +29,9 @@
     <Compile Include="costmap.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="spiral.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="result.png" />
