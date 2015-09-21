@@ -1,4 +1,4 @@
-# 2015.09.20, LI Yunsheng
+﻿# 2015.09.20, LI Yunsheng
 
 import numpy as np
 from scipy.fftpack import fft2, ifft2
@@ -126,5 +126,5 @@ cost = veh.cost(centers,costmap)
 
 print(cost)
 
-plt.imshow(costmap, cmap=plt.cm.gray_r)
+plt.imshow(costmap, cmap=plt.cm.gray_r, origin="lower")
 plt.show()
