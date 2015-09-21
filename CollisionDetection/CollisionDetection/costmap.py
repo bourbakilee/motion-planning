@@ -5,17 +5,20 @@ from scipy.fftpack import fft2, ifft2
 import matplotlib.pyplot as plt
 
 class Road():
-    def __init__(self,length,lane_num,lane_width,center_line=None, center_line_fun=None, q=None):
+    def __init__(self,length,lane_num=2,lane_width=3.75,center_line=None, center_line_fun=None, q=None, ref_grid_width=0.6, ref_grid_length=1, ref_delta_s=0.1):
         # center_line: Nx4 array, [[x,y,theta,k],...]
         self.length = length
         self.lane_num = lane_num
         self.lane_width = lane_width
+        self.grid_num_per_lane = 2 * np.ceil(np.ceil(lane_width / ref_grid_width) / 2) # lateral direction
+        self.grid_width = lane_width / self.grid_num_per_lane
+        self.grid_length = ref_grid_length
         if center_line is not None:
             self.center_line = center_line
         elif center_line_fun is not None:
-            self.center_line = self.spiral_calc(center_line_fun, length, q) # q0=(0,0,0)
+            self.center_line = self.spiral_calc(center_line_fun, length, q=q,ref_delta_s=ref_delta_s) # q0=(0,0,0)
         else:
-            line = np.zeros((np.ceil(length/0.1),4))
+            line = np.zeros((np.ceil(length/ref_delta_s),4))
             line[:,0] = np.linspace(0,length,line.shape[0])
             if q is not None:
                 sin_x = np.sin(q[2])*line[:,0]
@@ -27,10 +30,10 @@ class Road():
                 line[:,2] = np.mod((line[:,2] + q[2]), 2*np.pi)
             self.center_line = line
 
-    def spiral_calc(self,fun, length,q=None):
+    def spiral_calc(self,fun, length,q=None,ref_delta_s=0.1):
         # fun: k(s)
         # q0=(0,0,0)
-        N = np.ceil(length/0.1)
+        N = np.ceil(length/ref_delta_s)
         line = np.zeros((N,4))
         delta_s = length / (N-1)
         s_list = np.linspace(0,length,N)

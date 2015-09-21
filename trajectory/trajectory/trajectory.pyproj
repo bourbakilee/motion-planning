@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="road4.png" />
+    <Content Include="road5.png" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
