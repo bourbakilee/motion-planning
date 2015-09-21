@@ -12,9 +12,9 @@ class Road():
         self.lane_num = lane_num
         self.lane_width = lane_width
         self.width = lane_num*lane_width
-        self.grid_num_per_lane = 2 * np.ceil(np.ceil(lane_width / ref_grid_width) / 2) # lateral direction
-        self.grid_num_lateral = self.grid_num_per_lane*lane_num
-        self.grid_num_longitudinal = np.ceil(length/ref_grid_length)
+        self.grid_num_per_lane = int(2 * np.ceil(np.ceil(lane_width / ref_grid_width) / 2)) # lateral direction
+        self.grid_num_lateral = int(self.grid_num_per_lane*lane_num)
+        self.grid_num_longitudinal = int(np.ceil(length/ref_grid_length))
         self.grid_width = lane_width / self.grid_num_per_lane
         self.grid_length = length/self.grid_num_longitudinal
         self.N = int(np.ceil(length/ref_delta_s)) # number of discretized points of center line
@@ -64,7 +64,7 @@ class Road():
             w1 = s/self.delta_s - k
             w2 = 1 - w1
             station = self.center_line[k]*w2 + self.center_line[k+1]*w1
-        return np.array([station[0]-l*np.sin(station[2]), station[1]+l*np.cos(station[2]), station[2], (staion[3]**-1-l)**-1])
+        return np.array([station[0]-l*np.sin(station[2]), station[1]+l*np.cos(station[2]), station[2], (station[3]**-1-l)**-1])
 
     def ij2xy(self,i,j):
         # j - lateral offset \in [-self.grid_num_lateral/2, self.grid_num_lateral.2]

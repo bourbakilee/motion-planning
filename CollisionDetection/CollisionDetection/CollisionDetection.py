@@ -9,16 +9,31 @@ import costmap
 def road_profile(s):
     #s<=220
     return 0.01-0.00038611167606780294*s+4.4656981495145228e-6*s**2-1.4071316854528154e-8*s**3
+    #s<=110
+    #0.01-0.000242811907598*s+6.42266190994e-6*s**2-5.3571326595e-8*s**3
 
 length=220.
 lane_num = 5
-q0=(1.,15.,np.pi/10)
+q0=(0.,20.,0.)
 road = costmap.Road(length,lane_num=lane_num,center_line_fun=road_profile,q=q0)
 # print(road.center_line)
-plt.plot(road.center_line[:,0],road.center_line[:,1])
+print(road.grid_length)
+print(road.grid_width)
+plt.plot(road.center_line[:,0],road.center_line[:,1],color='green', linestyle='--', linewidth=2.)
 for i in range(road.lane_num+1):
-    plt.plot(road.boundary_lines[:,2*i],road.boundary_lines[:,2*i+1])
+    plt.plot(road.boundary_lines[:,2*i],road.boundary_lines[:,2*i+1],color='black', linewidth=1.)
+
+for i in range(road.grid_num_lateral//2):
+    line1 = road.lateral_biasing_line((i+1)*road.grid_width)
+    line2 = road.lateral_biasing_line(-(i+1)*road.grid_width)
+    plt.plot(line1[:,0],line1[:,1],color='black', linewidth=0.3)
+    plt.plot(line2[:,0],line2[:,1],color='black', linewidth=0.3)
+for i in range(road.grid_num_longitudinal+1):
+    line = road.longitudinal_biasing_line(i*road.grid_length)
+    plt.plot(line[:,0],line[:,1],color='black', linewidth=0.3)
+
 plt.axis('equal')
+#plt.axis([0,180,0,140])
 plt.show()
 
 
