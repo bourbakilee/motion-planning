@@ -22,7 +22,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="backup.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CollisionDetection.py" />
+    <Compile Include="costmap.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="result.png" />

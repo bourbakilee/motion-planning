@@ -1,4 +1,4 @@
-﻿# 2015.09.20, LI Yunsheng
+# 2015.09.20, LI Yunsheng
 
 import numpy as np
 from scipy.fftpack import fft2, ifft2
@@ -63,7 +63,7 @@ class Circle():
         R = np.zeros(disk_mesh.shape)
         for i in range(R.shape[0]):
             for j in range(R.shape[1]):
-                R[i,j] = disk_mesh[np.mod(i-x), np.mod(j-y)] 
+                R[i,j] = disk_mesh[i-x, j-y] 
         return R
 
 
@@ -93,8 +93,8 @@ class Veh_Cfg():
 
 
 
-N=400 # map size
-delta =0.25 # incremental distance
+N=1000 # map size
+delta =0.1 # incremental distance
 eps = 0.1 # numerical err
 
 obstacles = np.zeros((N,N)) # obstacles
@@ -102,7 +102,7 @@ obstacles[0, :] = 1
 obstacles[N-1, :] = 1
 obstacles[:, 0] = 1
 obstacles[:, N-1] = 1
-obstacles[170:230, 170:230] = 1
+obstacles[400:600, 400:600] = 1
 workspace = Grid(delta,delta,obstacles)
 
 veh = Veh_Cfg(25,25,np.pi/4,4,1,2)
@@ -125,8 +125,9 @@ costmap = np.where(costmap > 1, 1, costmap)
 cost = veh.cost(centers,costmap)
 
 print(cost)
-
+x=np.linspace(1,99,990)
+y=20+10*np.sin(x)
 plt.imshow(costmap, cmap=plt.cm.gray_r, origin="lower", extent=(0,100,0,100))
-
+plt.plot(x,y)
 # plt.rc('figure', figsize=(1000,1000))
 plt.show()
