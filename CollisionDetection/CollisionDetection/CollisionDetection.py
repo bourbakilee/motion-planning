@@ -80,21 +80,21 @@ class Veh_Cfg():
         self.r = np.sqrt(self.length**2/9 + self.width**2/4) # radius of circles, which cover the vehicle
         self.d = 2*self.length/3
 
-    def centers_of_circles(self):
+    def centers_of_circles(self,grid_map):
         c = np.zeros((3,2))
         direction = np.array([np.sin(self.t),np.cos(self.t)])
         c[1] = np.array([self.x,self.y]) + (self.l1 - self.l2)/2 * direction
         c[0] = c[1] - self.d * direction
         c[2] = c[1] + self.d * direction
-        return np.floor(c)
+        return np.floor(c/np.array([[grid_map.dM, grid_map.dN]]))
 
     def cost(self, centers, costmap):
         return np.max([costmap[tuple(c)] for c in centers])
 
 
 
-N=400 # map size
-delta =0.25 # incremental distance
+N=1000 # map size
+delta =0.1 # incremental distance
 eps = 0.1 # numerical err
 
 obstacles = np.zeros((N,N)) # obstacles
@@ -102,13 +102,13 @@ obstacles[0, :] = 1
 obstacles[N-1, :] = 1
 obstacles[:, 0] = 1
 obstacles[:, N-1] = 1
-obstacles[170:230, 170:230] = 1
+obstacles[400:600, 400:600] = 1
 workspace = Grid(delta,delta,obstacles)
 
 veh = Veh_Cfg(25,25,np.pi/4,4,1,2)
 disk = Circle(veh.r)
 disk_mesh = disk.mesh(workspace)
-centers = veh.centers_of_circles()
+centers = veh.centers_of_circles(workspace)
 veh_mesh = np.zeros((N,N))
 veh_mesh += disk.moveto(disk_mesh,centers[0,0],centers[0,1])
 veh_mesh += disk.moveto(disk_mesh,centers[1,0],centers[1,1])
@@ -125,6 +125,9 @@ costmap = np.where(costmap > 1, 1, costmap)
 cost = veh.cost(centers,costmap)
 
 print(cost)
-
-plt.imshow(costmap, cmap=plt.cm.gray_r, origin="lower")
+x=np.linspace(1,99,990)
+y=20+10*np.sin(x)
+plt.imshow(costmap, cmap=plt.cm.gray_r, origin="lower", extent=(0,100,0,100))
+plt.plot(x,y)
+# plt.rc('figure', figsize=(1000,1000))
 plt.show()
