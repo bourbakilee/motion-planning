@@ -3,6 +3,7 @@
 import numpy as np
 import spiral
 from scipy.fftpack import fft2, ifft2
+from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 
 class Road():
@@ -71,24 +72,28 @@ class Road():
         # i - longitudinal offset \in [0,self.grid_num_longitudinal]
         return self.sl2xy(i*self.grid_length, j*self.grid_width)
 
+
 class Vehicle():
-    def __init__(self, cfg=np.array([0.,0.,0.]),length=5., width=2.,wheelbase=3.):
-        #trajectory:Nx4 array - (t,x,y,theta)
-        self.cfg = cfg # Confiduration
-        self.center_of_rear_axle = cfg[0:2]
-        self.head = cfg[2]
+    def __init__(self, trajectory=np.array([[-1,3.,10.,0.,0.]]),length=5., width=2.,wheelbase=3.):
+        #trajectory:Nx4 array - (t,x,y,theta,k)
+        self.state = trajectory[0]
+        self.time = trajectory[0,0]
+        self.cfg = trajectory[0,1:4] # Confiduration
+        self.center_of_rear_axle = self.cfg[0:2]
+        self.head = self.cfg[2]
         self.length = length
         self.width = width
         self.wheelbase = wheelbase
-        c, s = np.cos(cfg[2]), np.sin(cfg[2])
-        self.geometric_center = cfg[0:2]+wheelbase/2*np.array([c,s])
+        c, s = np.cos(self.cfg[2]), np.sin(self.cfg[2])
+        self.geometric_center = self.center_of_rear_axle + wheelbase/2*np.array([c,s])
         self.vertex = self.geometric_center + 0.5*np.array([
             [c*length-s*width, s*length+c*width],
             [-c*length-s*width,-s*length+c*width],
             [-c*length+s*width,-s*length-c*width],
             [c*length+s*width, s*length-c*width]
             ])
-        # self.trajectory = trajectory if trajectory is not None else np.array([-1,0,0,0])
+        self.trajectory = trajectory
+        self.traj_fun = None if self.time<0 else interp1d(self.trajectory[:,0],self.trajectory[:,1:].T)
 
     @property
     def covering_disk_radius(self):
@@ -104,12 +109,35 @@ class Vehicle():
         centers[2] = centers[1] + distance * direction
         return centers
 
-    def moveto(self,q):
-        return Vehicle(cfg=q,length=self.length, width=self.width,wheelbase=self.wheelbase)
+#    def moveto(self,q):
+#        return Vehicle(cfg=q,length=self.length, width=self.width,wheelbase=self.wheelbase)
+
+    def set_time(self, t):
+        if self.time < 0:
+            return self.state
+        elif self.trajectory[0,0] <= t <= self.trajectory[-1,0]:
+            self.time = t
+            self.state[0] = t
+            self.state[1:] = self.traj_fun(t)
+            self.cfg = self.state[1:4]
+            self.center_of_rear_axle = self.cfg[0:2]
+            self.head = self.cfg[2]
+            c, s = np.cos(self.cfg[2]), np.sin(self.cfg[2])
+            self.geometric_center = self.center_of_rear_axle + wheelbase/2*np.array([c,s])
+            self.vertex = self.geometric_center + 0.5*np.array([
+                [c*length-s*width, s*length+c*width],
+                [-c*length-s*width,-s*length+c*width],
+                [-c*length+s*width,-s*length-c*width],
+                [c*length+s*width, s*length-c*width]
+                ])
+            return self.state
+        else:
+            print("Out of Time Range!")
+            return self.state
 
 
 class Workspace():
-    def __init__(self, resolution=0.25, M=320, N=400, static_obst=None, moving_obst=None, road=None,vehicle=Vehicle(cfg=np.array([3.,10.,0.]))):
+    def __init__(self, resolution=0.25, M=320, N=400, static_obst=None, moving_obst=None, road=None,vehicle=Vehicle(trajectory=np.array([[-1,3.,10.,0.,0.]]))):
         # M - row number of workspace
         # N - column number of workspace
         # static_obst - MxN arrary of {0 - free,1 - occupied}
@@ -123,3 +151,34 @@ class Workspace():
         self.moving_obst = moving_obst
         self.road = road
         self.vehicle = vehicle
+        #
+        self.grid_disk = self.disk_mesh() # MxN array
+
+    def disk_mesh(self):
+        # return MxN array
+        r = self.vehicle.covering_disk_radius
+        R = np.zeros((self.M, self.N)) 
+        j = np.floor(-r/self.resolution + 0.5)
+        y = (j+0.5)*self.resolution
+        while j < 0:
+            x = np.sqrt(r**2 - y**2)
+            i = np.floor(-x/self.resolution + 0.5)
+            i_list = np.linspace(i, -i, -2*i+1)
+            #i_list = np.where(i_list<0, i_list+grid_map.M, i_list)
+            #jj=j+grid_map.N
+            for ii in i_list:
+                R[ii,j] = 1
+            j += 1
+            y += self.resolution
+        j = 0
+        y = -self.resolution/2
+        while y < r:
+            x = np.sqrt(r**2 - y**2)
+            i = np.floor(-x/self.resolution + 0.5)
+            i_list = np.linspace(i, -i, -2*i+1)
+            #i_list = np.where(i_list<0, i_list+grid_map.N, i_list)
+            for ii in i_list:
+                R[ii,j] = 1
+            j += 1
+            y += self.resolution
+        return R
