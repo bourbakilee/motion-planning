@@ -70,3 +70,56 @@ class Road():
         # j - lateral offset \in [-self.grid_num_lateral/2, self.grid_num_lateral.2]
         # i - longitudinal offset \in [0,self.grid_num_longitudinal]
         return self.sl2xy(i*self.grid_length, j*self.grid_width)
+
+class Vehicle():
+    def __init__(self, cfg=np.array([0.,0.,0.]),length=5., width=2.,wheelbase=3.):
+        #trajectory:Nx4 array - (t,x,y,theta)
+        self.cfg = cfg # Confiduration
+        self.center_of_rear_axle = cfg[0:2]
+        self.head = cfg[2]
+        self.length = length
+        self.width = width
+        self.wheelbase = wheelbase
+        c, s = np.cos(cfg[2]), np.sin(cfg[2])
+        self.geometric_center = cfg[0:2]+wheelbase/2*np.array([c,s])
+        self.vertex = self.geometric_center + 0.5*np.array([
+            [c*length-s*width, s*length+c*width],
+            [-c*length-s*width,-s*length+c*width],
+            [-c*length+s*width,-s*length-c*width],
+            [c*length+s*width, s*length-c*width]
+            ])
+        # self.trajectory = trajectory if trajectory is not None else np.array([-1,0,0,0])
+
+    @property
+    def covering_disk_radius(self):
+        return  np.sqrt(self.length**2/9. + self.width**2/4.)
+
+    @property
+    def covering_disk_centers(self):
+        distance = 2.*self.length/3.
+        direction = np.array([np.sin(self.head),np.cos(self.head)])
+        centers = np.zeros((3,2))
+        centers[1] = self.geometric_center
+        centers[0] = centers[1] - distance * direction
+        centers[2] = centers[1] + distance * direction
+        return centers
+
+    def moveto(self,q):
+        return Vehicle(cfg=q,length=self.length, width=self.width,wheelbase=self.wheelbase)
+
+
+class Workspace():
+    def __init__(self, resolution=0.25, M=320, N=400, static_obst=None, moving_obst=None, road=None,vehicle=Vehicle(cfg=np.array([3.,10.,0.]))):
+        # M - row number of workspace
+        # N - column number of workspace
+        # static_obst - MxN arrary of {0 - free,1 - occupied}
+        # moving_obst - list of vehicle shape, optional
+        # road - optional
+        # vehicle - planning object
+        self.resolution = resolution
+        self.M = M
+        self.N = N
+        self.static_obst = np.zeros((M,N)) if static_obst is None else static_obst
+        self.moving_obst = moving_obst
+        self.road = road
+        self.vehicle = vehicle

@@ -3,6 +3,8 @@
 import numpy as np
 from scipy.fftpack import fft2, ifft2
 import matplotlib.pyplot as plt
+from matplotlib.path import Path
+import matplotlib.patches as patches
 
 import costmap
 
@@ -13,12 +15,28 @@ def road_profile(s):
     #0.01-0.000242811907598*s+6.42266190994e-6*s**2-5.3571326595e-8*s**3
 
 length=220.
-lane_num = 5
+lane_num = 2
 q0=(0.,20.,0.)
 road = costmap.Road(length,lane_num=lane_num,center_line_fun=road_profile,q=q0)
 # print(road.center_line)
-print(road.grid_length)
-print(road.grid_width)
+# print(road.grid_length)
+# print(road.grid_width)
+
+
+cfg = road.sl2xy(10,1.5)[0:3]
+veh = costmap.Vehicle(cfg=cfg)
+# verts = [veh.vertex[0],veh.vertex[1],veh.vertex[2],veh.vertex[3],veh.vertex[0]]
+# codes = [Path.MOVETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.CLOSEPOLY,]
+# path = Path(verts, codes)
+# patch = patches.PathPatch(path, facecolor='orange', lw=2)
+
+fig, ax = plt.subplots(figsize=(200,200))
+rect = plt.Rectangle((0,0),100,100,color='k',alpha=0.3)
+polyg = plt.Polygon(veh.vertex,color='g',alpha=0.5)
+ax.add_patch(rect)
+ax.add_patch(polyg)
+
+# ax.add_patch(patch)
 plt.plot(road.center_line[:,0],road.center_line[:,1],color='green', linestyle='--', linewidth=2.)
 for i in range(road.lane_num+1):
     plt.plot(road.boundary_lines[:,2*i],road.boundary_lines[:,2*i+1],color='black', linewidth=1.)
@@ -31,7 +49,6 @@ for i in range(road.grid_num_lateral//2):
 for i in range(road.grid_num_longitudinal+1):
     line = road.longitudinal_biasing_line(i*road.grid_length)
     plt.plot(line[:,0],line[:,1],color='black', linewidth=0.3)
-
 plt.axis('equal')
 #plt.axis([0,180,0,140])
 plt.show()
@@ -167,7 +184,7 @@ cost = veh.cost(centers,costmap)
 print(cost)
 
 plt.imshow(costmap, cmap=plt.cm.gray_r, origin="lower", extent=(0,100,0,100))
-
+plt.grid(True)
 # plt.rc('figure', figsize=(1000,1000))
 plt.show()
 '''
