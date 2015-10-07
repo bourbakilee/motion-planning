@@ -144,6 +144,7 @@ class Workspace():
         # moving_obst - list of vehicle shape, optional
         # road - optional
         # vehicle - planning object
+        self.time = 0.
         self.resolution = resolution
         self.M = M
         self.N = N
@@ -152,8 +153,9 @@ class Workspace():
         self.road = road
         self.vehicle = vehicle
         #
-        self.grid_disk = self.disk_mesh() # MxN array
+        self.grid_disk = self.disk_mesh # MxN array
 
+    #@property
     def disk_mesh(self):
         # return MxN array
         r = self.vehicle.covering_disk_radius
@@ -182,3 +184,35 @@ class Workspace():
             j += 1
             y += self.resolution
         return R
+
+    def grid_disk_moveto_ij(self,k,l):
+        # k, l - int
+        R = np.zeros((self.M,self.N))
+        for i in range(self.M):
+            for j in range(self.N):
+                R[i,j] = self.grid_disk[np.mod(i-k, self.M), np.mod(j-l, self.N)]
+        return R
+
+    def grid_disk_moveto_xy(self,x,y):
+        i = np.mod(int(np.floor(y/self.resolution)),self.N)
+        j = np.mod(int(np.floor(x/self.resolution)),self.N)
+        return self.grid_disk_moveto_ij(i,j)
+
+    # @property
+    def grid_vehicle(self,veh):
+        R = np.zeros((self.M, self.N))
+        centers = veh.covering_disk_centers
+        R += self.grid_disk_moveto_xy(centers[0,0],centers[0,1])
+        R += self.grid_disk_moveto_xy(centers[1,0],centers[1,1])
+        R += self.grid_disk_moveto_xy(centers[2,0],centers[2,1])
+        R = np.where(R>0, 1, 0)
+        return R
+
+    @property
+    def grid_road(self, road):
+        #if road is None:
+        #    return None
+        #else:
+        v_grid = [] # list of grid occupied by each lane
+        for i in range(self.road.lane_num + 1):
+            pass
