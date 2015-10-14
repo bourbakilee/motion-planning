@@ -26,6 +26,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CollisionDetection.py" />
+    <Compile Include="collisionmap.py" />
     <Compile Include="costmap.py">
       <SubType>Code</SubType>
     </Compile>
@@ -34,6 +35,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="collision_map.png" />
     <Content Include="result.png" />
   </ItemGroup>
   <PropertyGroup>

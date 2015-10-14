@@ -1,4 +1,4 @@
-﻿# 2015.09.21, LI Yunsheng
+# 2015.09.21, LI Yunsheng
 
 import numpy as np
 import spiral
@@ -72,9 +72,16 @@ class Road():
         # i - longitudinal offset \in [0,self.grid_num_longitudinal]
         return self.sl2xy(i*self.grid_length, j*self.grid_width)
 
+    def xy2sl(self,x,y):
+        pass
+
+    def xy2ij(self,x,y):
+        pass
+        
+
 
 class Vehicle():
-    def __init__(self, trajectory=np.array([[-1,3.,10.,0.,0.]]),length=5., width=2.,wheelbase=3.):
+    def __init__(self, trajectory=np.array([[-1,3.,10.,0.,0.]]),length=4., width=1.6,wheelbase=2.4):
         #trajectory:Nx4 array - (t,x,y,theta,k)
         self.state = trajectory[0]
         self.time = trajectory[0,0]
@@ -87,10 +94,12 @@ class Vehicle():
         c, s = np.cos(self.cfg[2]), np.sin(self.cfg[2])
         self.geometric_center = self.center_of_rear_axle + wheelbase/2*np.array([c,s])
         self.vertex = self.geometric_center + 0.5*np.array([
-            [c*length-s*width, s*length+c*width],
-            [-c*length-s*width,-s*length+c*width],
+            [-c*length-s*width, -s*length+c*width],
             [-c*length+s*width,-s*length-c*width],
-            [c*length+s*width, s*length-c*width]
+            [c*(length-0.3*width)+s*width, s*(length-0.3*width)-c*width],
+            [c*length+s*0.7*width,s*length-c*0.7*width],
+            [c*length-s*0.7*width, s*length+c*0.7*width],
+            [c*(length-0.3*width)-s*width, s*(length-0.3*width)+c*width]
             ])
         self.trajectory = trajectory
         self.traj_fun = None if self.time<0 else interp1d(self.trajectory[:,0],self.trajectory[:,1:].T)
@@ -137,7 +146,7 @@ class Vehicle():
 
 
 class Workspace():
-    def __init__(self, resolution=0.25, M=320, N=400, static_obst=None, moving_obst=None, road=None,vehicle=Vehicle(trajectory=np.array([[-1,3.,10.,0.,0.]]))):
+    def __init__(self, resolution=0.25, M=400, N=400, static_obst=None, moving_obst=None, road=None,vehicle=Vehicle(trajectory=np.array([[-1,50,50,np.pi/8,0.]]))):
         # M - row number of workspace
         # N - column number of workspace
         # static_obst - MxN arrary of {0 - free,1 - occupied}
@@ -153,12 +162,12 @@ class Workspace():
         self.road = road
         self.vehicle = vehicle
         #
-        self.grid_disk = self.disk_mesh # MxN array
+        self.grid_disk = self.disk_mesh() # MxN array
 
     #@property
-    def disk_mesh(self):
+    def disk_mesh(self,r):
         # return MxN array
-        r = self.vehicle.covering_disk_radius
+        # r = self.vehicle.covering_disk_radius
         R = np.zeros((self.M, self.N)) 
         j = np.floor(-r/self.resolution + 0.5)
         y = (j+0.5)*self.resolution
@@ -208,7 +217,7 @@ class Workspace():
         R = np.where(R>0, 1, 0)
         return R
 
-    @property
+    # @property
     def grid_road(self, road):
         #if road is None:
         #    return None
