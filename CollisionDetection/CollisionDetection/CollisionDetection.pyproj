@@ -30,9 +30,11 @@
     <Compile Include="costmap.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Environment.py" />
     <Compile Include="spiral.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Test.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="collision_map.png" />
