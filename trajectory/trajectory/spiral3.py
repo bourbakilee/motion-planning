@@ -132,14 +132,17 @@ def dist(q0, q1):
     return np.sqrt((q1[0, 0] - q0[0, 0])**2 + (q1[1, 0] - q0[1, 0])**2) + min(dtheta, 2*np.pi - dtheta) / k_max
 
 
-def opt_path(bd_con):
+def opt_path(bd_con, init_val):
     # bd_con : boundary condition, (k0, x1, y1, theta1, k1)
+    # init_val: np.matrix - 3X1
+    # return: np.matrix - 3X1
     norm = lambda q:dist(np.matlib.zeros((3,1)), q)
-    pp = np.matrix([
-        [(2.*bd_con[0]+bd_con[4])/3.],
-        [(bd_con[0]+2.*bd_con[4])/3.],
-        [norm(np.matrix([[bd_con[1]], [bd_con[2]], [bd_con[3]]]))]
-        ]) # initial guess value, can be replaced by lookup-table
+    pp = init_val
+    # pp = np.matrix([
+        # [(2.*bd_con[0]+bd_con[4])/3.],
+        # [(bd_con[0]+2.*bd_con[4])/3.],
+        # [norm(np.matrix([[bd_con[1]], [bd_con[2]], [bd_con[3]]]))]
+        # ]) # initial guess value, can be replaced by lookup-table
     norm_dq = 1.
     eps = 1.e-8
     # N = 100
@@ -153,7 +156,7 @@ def opt_path(bd_con):
     return pp
 
 
-def calc_path(q0, q1):
+def calc_path(q0, q1, init_val=None):
     # q : (x, y, theta, k)
     # return : (p0,p1,p2,p3,sg)
     cc = np.cos(q0[2])
@@ -162,7 +165,13 @@ def calc_path(q0, q1):
     y_r = -(q1[0]-q0[0])*ss + (q1[1]-q0[1])*cc
     theta_r = np.mod(q1[2]-q0[2], 2*np.pi)
     bd_con = (q0[3], x_r, y_r, theta_r, q1[3])
-    pp = opt_path(bd_con)
+    if init_val is None:
+        init_val =  np.matrix([
+        [(2.*bd_con[0]+bd_con[4])/3.],
+        [(bd_con[0]+2.*bd_con[4])/3.],
+        [norm(np.matrix([[bd_con[1]], [bd_con[2]], [bd_con[3]]]))]
+        ]) # initial guess value, can be replaced by lookup-table
+    pp = opt_path(bd_con, init_val)
     p = (q0[3], pp[0, 0], pp[1, 0], q1[3], pp[2, 0])
     return p
 

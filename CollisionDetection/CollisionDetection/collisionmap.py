@@ -7,6 +7,7 @@ import matplotlib.patches as patches
 import cv2
 from costmap import Vehicle
 
+
 def grids_occupied_by_line(f,x1,x2):
     # y=f(x)
     #R = np.zeros((400,400))
@@ -49,13 +50,14 @@ def grids_encircled_by_line_grids(grid_lists):
                 j += 1
     return R 
 
+
 def grids_occupied_by_vehicle(veh):
     # R = np.zeros((400,400))
     grid_lists=[]
     for i in range(len(veh.vertex)):
         j = (i+1) % (len(veh.vertex))
-        if np.abs(veh.vertex[i,0] - veh.vertex[j,0]) < 1.e-8:
-            grid_list = [(floor(veh.vertex[i,0]*4),floor(veh.vertex[i,1]*4)),(floor(veh.vertex[j,0]*4),floor(veh.vertex[j,1]*4))]
+        if floor(veh.vertex[i,0]*4) == floor(veh.vertex[j,0]*4):
+            grid_list = [(floor(veh.vertex[i,0]*4),floor(veh.vertex[i,1]*4)),(floor(veh.vertex[j,0]*4),floor(veh.vertex[j,1]*4)+1)]
         else:
             f = interp1d([veh.vertex[i,0], veh.vertex[j,0]], [veh.vertex[i,1], veh.vertex[j,1]])
             if veh.vertex[i,0] < veh.vertex[j,0]:
@@ -83,14 +85,13 @@ def grids_occupied_by_polygon(plg):
     return grids_encircled_by_line_grids(grid_lists)
 
 
-
 if __name__ == '__main__':
     fig = plt.figure()
     ax1 = fig.add_subplot(131)
     ax2 = fig.add_subplot(132)
     ax3 = fig.add_subplot(133)
-
-    veh = Vehicle(trajectory=np.array([[-1,10.125,10.125,0.75*np.pi,0]]))
+    
+    veh = Vehicle(trajectory=np.array([[-1,10.125,10.125,np.pi/4,0]]))
     # r = np.sqrt(veh.width**2 + (veh.length+veh.wheelbase)**2) / 2
     # n = 2*floor(ceil(8*r)/2)+1
     # print(r,n)
@@ -105,6 +106,7 @@ if __name__ == '__main__':
 
     # KK = np.array([[1,1,1,1,2,1,1],[1,2,3,1,1,1,1],[3,2,1,1,1,1,1],[1,1,1,1,2,1,1],[1,1,1,1,2,1,1],[1,1,1,1,2,1,1],[1,1,1,1,2,1,1]])
     Dest = cv2.filter2D(Env, -1, K)
+    # Dest = cv2.dilate(Env, K, iterations = 1)
     ax3.imshow(Dest,cmap=plt.cm.gray_r, origin="lower", extent=(0,20.25,0,20.25))
 
     plt.show()
@@ -143,4 +145,4 @@ if __name__ == '__main__':
     # #ax.set_ylim(-0.125*n,0.125*n)
 
     # plt.show()
-    # #plt.savefig('vehiclemap.png',)
+    # plt.savefig('vehiclemap.png',)

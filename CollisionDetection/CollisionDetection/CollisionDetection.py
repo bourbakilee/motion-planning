@@ -24,7 +24,7 @@ road = costmap.Road(length,lane_num=lane_num,center_line_fun=road_profile,q=q0)
 
 
 cfg = road.sl2xy(10,1.5)[0:3]
-veh = costmap.Vehicle(cfg=cfg)
+veh = costmap.Vehicle()
 # verts = [veh.vertex[0],veh.vertex[1],veh.vertex[2],veh.vertex[3],veh.vertex[0]]
 # codes = [Path.MOVETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.CLOSEPOLY,]
 # path = Path(verts, codes)

@@ -114,7 +114,7 @@ veh_mesh += disk.moveto(disk_mesh,centers[0,0],centers[0,1])
 veh_mesh += disk.moveto(disk_mesh,centers[1,0],centers[1,1])
 veh_mesh += disk.moveto(disk_mesh,centers[2,0],centers[2,1])
 veh_mesh = np.where(veh_mesh>0, 0.8, 0)
-
+# 还是Emacs好用，呵呵
 Obstacles = fft2(obstacles)
 Robot = fft2(disk_mesh)
 CostMap = Obstacles * Robot
