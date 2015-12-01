@@ -74,18 +74,20 @@ def Build_InitialGuessTable():
     cursor = conn.cursor()
     key_queue = [(0,i,0,0,0) for i in range(17)] # 数据库中当前已有数据，可以从数据库中读取已有数据
     # print(key_queue)
+    items = 17
     while len(key_queue)>0:
         key = key_queue.pop(0)
         # print(key)
         init_val = db_query(cursor, key)
         # print(init_val)
         nears = neighbors(cursor, key) # 与key的曼哈顿距离为1的点
-        print(nears)
+        # print(nears)
         for (i,j,k,l,m) in nears:
             bd_con = (i/40, 1+3.0625*j, 6.25*k, l*np.pi/16, m/40)
             val = TG.optimize(bd_con, init_val)
             key_val = (i,j,k,l,m, val[0], val[1], val[2])
-            print(key_val)
+            items += 1
+            print('Progress: {0:%}, Content: {1}'.format(items/1419857, key_val))
             cursor.execute('insert or ignore into InitialGuessTable values (?,?,?,?,?,?,?,?)', key_val)
             key_queue.append((i,j,k,l,m))
         # 数据库操作要注意，插入数据之后要提交才能生效，游标处理要注意

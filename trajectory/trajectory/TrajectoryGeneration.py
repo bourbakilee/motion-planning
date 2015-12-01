@@ -128,7 +128,7 @@ def optimize(bd_con, init_val=None):
         elif pp[2,0] > 400.:
             pp[2,0] = 400.
         p = (bd_con[0], pp[0,0], pp[1,0], bd_con[4], pp[2,0])
-        print('p={0}'.format(p))
+        # print('p={0}'.format(p))
         r = (__a(p), __b(p), __c(p), __d(p))
         # print('r={0}'.format(r))
     if times > 100:
