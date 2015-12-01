@@ -165,6 +165,7 @@ def calc_path(q0, q1, init_val=None):
     y_r = -(q1[0]-q0[0])*ss + (q1[1]-q0[1])*cc
     theta_r = np.mod(q1[2]-q0[2], 2*np.pi)
     bd_con = (q0[3], x_r, y_r, theta_r, q1[3])
+    norm = lambda q:dist(np.matlib.zeros((3,1)), q)
     if init_val is None:
         init_val =  np.matrix([
         [(2.*bd_con[0]+bd_con[4])/3.],
@@ -252,8 +253,10 @@ if __name__ == '__main__':
     # print(eval_velocity(p1,p2,plims))
 
     bd_con = (0.01, 100, 40, np.pi/6., -0.01)
-    pp = opt_path(bd_con)
-    p = [bd_con[0], pp[0, 0], pp[1, 0], bd_con[4], pp[2, 0]]
+    q0 = (0, 0, 0, bd_con[0])
+    q1 = (bd_con[1], bd_con[2], bd_con[3], bd_con[4])
+    p = calc_path(q0,q1)
+    #p = [bd_con[0], pp[0, 0], pp[1, 0], bd_con[4], pp[2, 0]]
     sp = np.linspace(0, p[4], 101)
     xx = [x(ss, p) for ss in sp]
     yy = [y(ss, p) for ss in sp]

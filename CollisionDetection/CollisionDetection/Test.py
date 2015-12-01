@@ -33,9 +33,14 @@ def test_vehicle():
 
 def road_profile(s):
     #s<=220
-    return 0.01-0.00038611167606780294*s+4.4656981495145228e-6*s**2-1.4071316854528154e-8*s**3
+    #return 0.01-0.00038611167606780294*s+4.4656981495145228e-6*s**2-1.4071316854528154e-8*s**3
     #s<=110
-    #0.01-0.000242811907598*s+6.42266190994e-6*s**2-5.3571326595e-8*s**3
+    return 0.01-0.000242811907598*s+6.42266190994e-6*s**2-5.3571326595e-8*s**3
+
+
+def test():
+    center_line = spiral.spiral_calc(road_profile, 110., q=(0.,0.,0.))
+    print(center_line[-1,:])
 
 
 def test_road():
@@ -112,4 +117,5 @@ def test_workspace():
 if __name__ == '__main__':
     # test_vehicle()
     # test_road()
-    test_workspace()
+    # test_workspace()
+    test()

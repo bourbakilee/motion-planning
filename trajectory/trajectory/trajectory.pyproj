@@ -23,6 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="InitialGuessTable.py" />
     <Compile Include="road.py">
       <SubType>Code</SubType>
     </Compile>
@@ -33,6 +34,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="trajectory.py" />
+    <Compile Include="TrajectoryGeneration.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="road4.png" />
