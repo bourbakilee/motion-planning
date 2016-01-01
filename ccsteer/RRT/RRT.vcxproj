@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4AC0FE78-190E-431B-8FB4-EDB7793126F2}</ProjectGuid>
-    <RootNamespace>ccsteer</RootNamespace>
+    <ProjectGuid>{A763E944-30A8-4E8F-A556-44712E565D64}</ProjectGuid>
+    <RootNamespace>RRT</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -69,9 +69,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\Dev\boost_1_60_0;C:\Users\liys\Documents\GitHubVisualStudio\motion-planning\ccsteer\ccsteer;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\liys\Documents\GitHubVisualStudio\motion-planning\ccsteer\x64\Release;$(LibraryPath)</LibraryPath>
     <TargetExt>.lib</TargetExt>
-    <IncludePath>D:\Dev\boost_1_60_0;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,9 +79,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -89,9 +86,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -102,7 +96,6 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -116,21 +109,17 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CCStateSpace.cpp" />
-    <ClCompile Include="fresnel.cpp" />
+    <ClInclude Include="evaluation.h" />
+    <ClInclude Include="RRT.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CCStateSpace.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CCStateSpace.h" />
-    <ClInclude Include="fresnel.h" />
+    <ClCompile Include="evaluation.cpp" />
+    <ClCompile Include="RRT.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

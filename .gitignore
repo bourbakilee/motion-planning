@@ -194,3 +194,10 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+#
+*.png
+__pycache__/
+.ipynb_checkpoints/
+*.db
+*.ipynb

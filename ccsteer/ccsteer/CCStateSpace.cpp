@@ -1,5 +1,5 @@
 /*
-LI Yunsheng, 2015
+LI Yunsheng, 2015.04.10
 */
 
 #include "CCStateSpace.h"
@@ -104,7 +104,7 @@ double CCStateSpace::distance(State *q1, State *q2)
     return CCStateSpace::distance(q1,q2,*this);
 }
 
-//checked 10.04.2015, {Forward/Backward, Left/Right, Head: Increase/Decrease, Default/Reverse at middle circle/No middle circle}
+//checked 2015.04.10, {Forward/Backward, Left/Right, Head: Increase/Decrease, Default/Reverse at middle circle/No middle circle}
 const int CCStateSpace::ccTurnType[14][4] = {
     {1,0,0,0},  //SP                0
     {-1,0,0,0}, //SN                1
@@ -176,7 +176,7 @@ const int CCStateSpace::PathType[50][5]={
     {7,7,7,7,7}     //49
 };
 
-//checked 10.04.2015
+//checked 2015.04.10
 void CCStateSpace::State::cc_centre(const CCStateSpace &space)
 {
     x_o_lp = x + space.x_o*cos(theta) - space.y_o*sin(theta);
@@ -209,8 +209,18 @@ CCStateSpace::State  CCStateSpace::State::global_by_ref(const State &local_ref)
     return CCStateSpace::State(x_g, y_g, theta_g);  //
 }
 
+double CCStateSpace::State::operator [](int i) const
+{
+	if (i % 3 == 0)
+		return this->x;
+	else if (i % 3== 1)
+		return this->y;
+	else
+		return this->theta;
+}
 
-//checked 10.04.2015, verified 11.04.2015
+
+//checked 2015.04.10, verified 2015.04.11
 //0<delta<delta_min; or topological path(0<delta<pi/2)
 //topological path, sigma={double d = D(delta / 2); double s = sin(delta/2+space.miu); sigma = pi*d*d / (space.r*space.r*s*s);}
 CCStateSpace::CCTurn::CCTurn(const int *type_, const State &start, double delta_, double sigma_, const CCStateSpace &space) :type(type_),q_s(start),delta(delta_),sigma(sigma_)
@@ -226,7 +236,7 @@ CCStateSpace::CCTurn::CCTurn(const int *type_, const State &start, double delta_
     q_g = CCStateSpace::State(space, q_s.x + type[0] * c2*d*c1 - type[1] * s2*d*s1, q_s.y + type[0] * s2*d*c1 + type[1] * c2*d*s1, theta_g);
 }
 
-//checked 10.04.2015, verified 11.04.2015
+//checked 2015.04.10, verified 2015.04.11
 //delta==0; or delta_min<delta<delta_min+pi; or delta_min+pi <delta <2*pi
 CCStateSpace::CCTurn::CCTurn(const int * type_, const State &start, double delta_, const CCStateSpace &space) :type(type_), q_s(start), delta(delta_), sigma(space.sigma_max)
 {
@@ -270,7 +280,7 @@ CCStateSpace::CCTurn::CCTurn(const int * type_, const State &start, double delta
     }
 }
 
-//verified 11.04.2015
+//verified 2015.04.11
 CCStateSpace::CCTurn::CCTurn(const CCTurn &cct) :type(cct.type), q_s(cct.q_s), q_g(cct.q_g), delta(cct.delta), sigma(cct.sigma), length(cct.length)
 {
     vlength[0] = cct.vlength[0];
@@ -292,14 +302,14 @@ CCStateSpace::CCTurn & CCStateSpace::CCTurn::operator = (const CCTurn &cct)
     return *this;
 }
 
-//checked 10.04.2015, verified 11.04.2015
+//checked 2015.04.10, verified 2015.04.11
 CCStateSpace::State  CCStateSpace::CCTurn::interpolate(double s, const CCStateSpace &space) //0<=s<=length
 {
     if (s < CC_EPS) return q_s;
     else if (abs(length - s) < CC_EPS) return q_g;
     else if (CC_EPS <= s && s <= length - CC_EPS)
     {
-        if (type[1] == 0)   //Line, checked 10.04.2015
+        if (type[1] == 0)   //Line, checked 2015.04.10
             return CCStateSpace::State(q_s.x + type[0] * s*cos(q_s.theta), q_s.y + type[0] * s*sin(q_s.theta), q_s.theta);
         else{
             double tmp = root_pi / sqrt(sigma); //
@@ -322,10 +332,10 @@ CCStateSpace::State  CCStateSpace::CCTurn::interpolate(double s, const CCStateSp
         }
     }
     else
-        return CCStateSpace::State(); //added 11.04.2015
+        return CCStateSpace::State(); //added 2015.04.11
 }
 
-//verified 11.04.2015
+//verified 2015.04.11
 CCStateSpace::State  CCStateSpace::CCTurn::interpolate(int i, int n, const CCStateSpace &space)
 {
     if (i == 0)
@@ -336,7 +346,7 @@ CCStateSpace::State  CCStateSpace::CCTurn::interpolate(int i, int n, const CCSta
         return this->interpolate(length*i / n, space);
 }
 
-//verified 11.04.2015
+//verified 2015.04.11
 void CCStateSpace::CCTurn::vec_interpolate(double s, vector<CCStateSpace::State> *vec, const CCStateSpace &space) //s>>CC_EPS
 {
     //s>CC_EPS --step
@@ -377,7 +387,7 @@ void CCStateSpace::CCTurn::vec_interpolate(double s, vector<CCStateSpace::State>
 
 
 //-----------------------------------Primitive CCTurn-----------------------------------------
-//added 11.04.2015
+//added 2015.04.11
 //0<=t<=2*pi
 CCStateSpace::CCTurn CCStateSpace::CC_LP(CCStateSpace::State *q_s, double t)
 {
@@ -400,7 +410,7 @@ CCStateSpace::CCTurn CCStateSpace::CC_LP(CCStateSpace::State *q_s, double t)
         return CCStateSpace::CCTurn(CCStateSpace::ccTurnType[3], *q_s, t, *this); //two clothoids and arc
     }
 }
-//added 11.04.2015
+//added 2015.04.11
 CCStateSpace::CCTurn CCStateSpace::CC_RP(CCStateSpace::State *q_s, double t)
 {
     if(t < CC_EPS || t > two_pi - CC_EPS)
@@ -422,7 +432,7 @@ CCStateSpace::CCTurn CCStateSpace::CC_RP(CCStateSpace::State *q_s, double t)
         return CCStateSpace::CCTurn(CCStateSpace::ccTurnType[6], *q_s, t, *this); //two clothoids and arc
     }
 }
-//added 11.04.2015
+//added 2015.04.11
 CCStateSpace::CCTurn CCStateSpace::CC_LN(CCStateSpace::State *q_s, double t)
 {
     if(t < CC_EPS || t > two_pi - CC_EPS)
@@ -444,7 +454,7 @@ CCStateSpace::CCTurn CCStateSpace::CC_LN(CCStateSpace::State *q_s, double t)
         return CCStateSpace::CCTurn(CCStateSpace::ccTurnType[9], *q_s, t, *this); //two clothoids and arc
     }
 }
-//added 11.04.2015
+//added 2015.04.11
 CCStateSpace::CCTurn CCStateSpace::CC_RN(CCStateSpace::State *q_s, double t)
 {
     if(t < CC_EPS || t > two_pi - CC_EPS)
@@ -466,19 +476,19 @@ CCStateSpace::CCTurn CCStateSpace::CC_RN(CCStateSpace::State *q_s, double t)
         return CCStateSpace::CCTurn(CCStateSpace::ccTurnType[12], *q_s, t, *this); //two clothoids and arc
     }
 }
-//added 11.04.2015
+//added 2015.04.11
 CCStateSpace::CCTurn CCStateSpace::CC_SP(CCStateSpace::State *q_s, double t)
 {
     return CCStateSpace::CCTurn(ccTurnType[0], *q_s, t,*this);  
 }
-//added 11.04.2015
+//added 2015.04.11
 CCStateSpace::CCTurn CCStateSpace::CC_SN(CCStateSpace::State *q_s, double t)
 {
     return CCStateSpace::CCTurn(ccTurnType[1], *q_s, t,*this);
 }
 //--------------------------------End of Primitive CCTurn-------------------------------------
 //--------------------------------------------------------------------------------------------
-//added 11.04.2015, verified
+//added 2015.04.11, verified
 //CSC,8
 //1
 bool CCStateSpace::LPSPLP(CCStateSpace::State *q_s,CCStateSpace::State *q_g, vector<CCStateSpace::CCTurn> *vec_cct, double *t, double *u, double *v, double *err, CCStateSpace::CCPathType *type)

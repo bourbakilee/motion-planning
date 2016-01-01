@@ -1,3 +1,7 @@
+/*
+LI Yunsheng, 2015.04.10
+*/
+
 #ifndef CCSTATAESPACE_H
 #define CCSTATAESPACE_H
 #include "fresnel.h"
@@ -18,7 +22,7 @@ class CCStateSpace
 {
 public:
 /*-------------------------State--------------------------------*/
-	//checked 10.04.2015
+	//checked 2015.04.10
 	class State{
 	public:
 		State() :State(0.,0.,0.){}	//
@@ -30,6 +34,7 @@ public:
 		void cc_centre(const CCStateSpace &space);
 		State local_to_ref(State *global_ref, const CCStateSpace &space);
 		State global_by_ref(const State &local_ref);
+		double operator [](int i) const;
 		//
 		double x, y, theta;
 		
@@ -42,7 +47,7 @@ public:
 /*------------------------CC-Truns------------------------------*/
 	//
 	static const int ccTurnType[14][4];
-	// verified 11.04.2015
+	// verified 2015.04.11
 	class CCTurn{
 	public:
 		CCTurn(const int *type_, const State &start, const CCStateSpace &space):CCTurn(type_, start,2*space.r*sin(space.miu),space){}
@@ -89,6 +94,7 @@ public:
 	public:
 		//
 		CCPath(State *start, State *goal, CCStateSpace *space);
+		CCPath(State s, State g, CCStateSpace space) :CCPath(&s, &g, &space) {}
 		//
 		void vec_interpolate(double step, vector<State> *vec, const CCStateSpace &space);
 		//
